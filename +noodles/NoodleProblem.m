@@ -4,21 +4,35 @@ classdef NoodleProblem < handle
     % to run the optimization.
     
     properties  ( GetAccess = 'public', SetAccess = 'private' )
+        % basic data
         objfun;
         x0;
         dim;
         options;
+        
+        % instance of NoodleSubproblem
         subproblem;
         
+        % start time of the optimization routine
         start_time;
+        
+        % current state
         state;
         
+        % flag to indicate whether any exit condition is satisfied. Set in
+        % init() and check_termination() and checked in cont().
         exitflag;
+        
+        % flag to indicate whether we are in the first iteration. Used e.g.
+        % by function value updating routines.
         flag_initial;
     end
     
     methods
         function this = NoodleProblem(objfun, x0, options)
+            % Create a new NoodleProblem instance and fill all needed
+            % properties.
+            
             this.objfun     = objfun;
             this.x0         = x0(:);
             this.dim        = size(this.x0,1);
@@ -27,7 +41,7 @@ classdef NoodleProblem < handle
         end
         
         function results = run_optimization(this)
-            % Run optimization
+            % Run optimization.
             % 
             % Output:
             % results    : NoodleResults object
@@ -80,7 +94,8 @@ classdef NoodleProblem < handle
         end
         
         function init(this)
-            % Initialize/clear all variables
+            % Initialize/clear all variables. Called at the beginning of
+            % run_optimization().
             
             this.start_time = cputime;
             this.exitflag = nan;
@@ -98,7 +113,7 @@ classdef NoodleProblem < handle
         end
         
         function fval = compute_fval(this, x)
-            % Wrapper for computing just the function value
+            % Wrapper for computing just the function value.
             
             fval = this.objfun(x);
             % this.state.feval_count = this.state.feval_count + 1;
@@ -106,7 +121,7 @@ classdef NoodleProblem < handle
         
         function success = update_state(this, x)
             % In the state, update the position, function value and 
-            % derivatives
+            % derivatives.
             
             [fval,grad,hess] = this.options.derivative_fcn(this, x);
             this.state.feval_count = this.state.feval_count + 1;
@@ -129,7 +144,8 @@ classdef NoodleProblem < handle
         end
         
         function check_termination(this)
-            % Check all termination conditions and set exitflag accordingly
+            % Check all termination conditions and set exitflag
+            % accordingly.
             
             this.state.iter_count = this.state.iter_count + 1;
             
@@ -147,7 +163,7 @@ classdef NoodleProblem < handle
         
         function bool_cont = cont(this)
             % Return true if optimization should be continued, false if any
-            % termination condition has been hit
+            % termination condition has been hit.
             
             bool_cont = isnan(this.exitflag);
         end
