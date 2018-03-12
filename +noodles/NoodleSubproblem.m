@@ -79,6 +79,7 @@ classdef (Abstract) NoodleSubproblem < handle
             %
             % Input:
             % fval_new  : objfun(x+step)
+            
             accept_step = fval_new < this.fval;
         end
         

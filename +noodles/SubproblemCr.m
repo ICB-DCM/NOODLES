@@ -2,13 +2,18 @@ classdef SubproblemCr < noodles.NoodleSubproblem
     % Cubic regularization with exact solution of the subproblem.
     
     properties ( GetAccess = 'public', SetAccess = 'private' )
+        % regularization
         sigma;
+        
+        % prediction ratio
         ratio;
         
+        % for Schur decomposition
         Q;
         D;
         b;
         
+        % space for solution of rotated problem
         y;
     end
     
