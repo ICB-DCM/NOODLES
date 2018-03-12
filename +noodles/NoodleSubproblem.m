@@ -1,7 +1,7 @@
 classdef (Abstract) NoodleSubproblem < handle
     % The NoodleSubproblem class administers the local search for the next
     % evaluation point. To customize the subproblem solution, derive from
-    % this class and implement the various methods used in 
+    % this class and implement the various methods used in
     % NoodleProblem.run_optimization().
     
     properties ( GetAccess = 'public', SetAccess = 'protected' )
@@ -71,6 +71,17 @@ classdef (Abstract) NoodleSubproblem < handle
             this.hess = state.hess;
         end
         
+        function accept_step = evaluate(this, fval_new)
+            % Determine whether the beforehand computed step should be
+            % accepted. Specialized subproblems might define more complex
+            % rules on accepting a new step, in order to reduce the number
+            % of derivative computations.
+            %
+            % Input:
+            % fval_new  : objfun(x+step)
+            accept_step = fval_new < this.fval;
+        end
+        
     end
     
     methods (Abstract)
@@ -78,13 +89,6 @@ classdef (Abstract) NoodleSubproblem < handle
         % Solve the subproblem and update the step variable so that x+step
         % indicates the predicted best next evaluation point.
         solve(this)
-        
-        % Determine whether the beforehand computed step should be
-        % accepted.
-        %
-        % Input:
-        % fval_new  : objfun(x+step)
-        accept_step = evaluate(this, fval_new)
         
         % Update internal state according to whether the last step was
         % accepted or not. Only here relevant variables should be changed,
