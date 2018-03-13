@@ -29,6 +29,9 @@ classdef (Abstract) NoodleSubproblem < handle
         % current hessian
         hess;
         
+        % current gradient norm
+        gradnorm;
+        
         % step proposed for current subproblem
         step;
         
@@ -55,6 +58,7 @@ classdef (Abstract) NoodleSubproblem < handle
             this.fval       = nan;
             this.grad       = nan(this.dim,1);
             this.hess       = nan(this.dim,this.dim);
+            this.gradnorm   = nan;
             this.step       = nan(this.dim,1);
             this.stepnorm   = inf;
         end
@@ -65,10 +69,11 @@ classdef (Abstract) NoodleSubproblem < handle
             % Input:
             % state   : NoodleState from the super NoodleProblem
             
-            this.x    = state.x;
-            this.fval = state.fval;
-            this.grad = state.grad;
-            this.hess = state.hess;
+            this.x          = state.x;
+            this.fval       = state.fval;
+            this.grad       = state.grad;
+            this.hess       = state.hess;
+            this.gradnorm   = state.gradnorm;
         end
         
         function accept_step = evaluate(this, fval_new)
