@@ -211,9 +211,10 @@ classdef NoodleProblem < handle
                 step      = problem.subproblem.step;
 
                 y = grad - grad_prev;
-                den = (y - hess_prev * step)' * step;
+                hess_prev_step = hess_prev * step;
+                den = (y - hess_prev_step)' * step;
                 if abs(den) >= sqrt(eps)
-                    num = (y - hess_prev * step) * (y - hess_prev * step)';
+                    num = (y - hess_prev_step) * (y - hess_prev_step)';
                     hess = hess_prev + num / den;
                 else
                     hess = hess_prev;
@@ -261,6 +262,32 @@ classdef NoodleProblem < handle
                 
                 hess = hess_prev + s1 - s2;
             end
+        end
+        
+        function [fval, grad, hess] = psb(problem, x)
+           % Update hessian via Powell-symmetric-Broyden formula.
+           
+           [fval,grad] = problem.objfun(x);
+           
+           if problem.flag_initial
+               hess = eye(problem.dim);
+           else
+               grad_prev = problem.state.grad;
+               hess_prev = problem.state.hess;
+               step      = problem.subproblem.step;
+               
+               y = grad - grad_prev;
+               y_hess_prev_step = y - hess_prev * step;
+               step_squared = step' * step;
+               
+               if abs(step_squared) <= sqrt(eps)
+                   hess = hess_prev;
+               else
+                   hess = hess_prev ...
+                       + ( y_hess_prev_step * step' + step * y_hess_prev_step' ) /  step_squared ...
+                       - ( step' * y_hess_prev_step * (step * step') ) / step_squared^2;
+               end
+           end
         end
         
         function [fval, grad, hess] = custom_sr1(problem, x)
