@@ -81,7 +81,8 @@ classdef SubproblemCr < noodles.NoodleSubproblem
                 this.sigma = this.options.gamma_1*this.sigma;
             else
                 if this.ratio >= this.options.eta_2
-                    this.sigma = max([this.options.gamma_2*this.sigma, this.options.sigma_min]);
+                    this.sigma = max(min(this.sigma,this.gradnorm),1e-16);
+%                     this.sigma = max([this.options.gamma_2*this.sigma, this.options.sigma_min]);
                 elseif this.ratio <= this.options.eta_1
                     this.sigma = this.options.gamma_1*this.sigma;
                 end
