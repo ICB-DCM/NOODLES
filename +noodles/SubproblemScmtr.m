@@ -74,7 +74,7 @@ classdef SubproblemScmtr < noodles.NoodleSubproblem
                 c1 = this.b(j);
                 c2 = this.D(j,j)/2;
                 c3 = this.rho(j)/6;
-                this.y(j) = noodles.SubproblemScmtr.min_poly(c0,c1,c2,c3,0,-this.delta,this.delta);
+                this.y(j) = noodles.Utils.min_poly3(c0,c1,c2,c3,0,-this.delta,this.delta);
             end
             
             % compute step
@@ -141,60 +141,6 @@ classdef SubproblemScmtr < noodles.NoodleSubproblem
                     error(['Options field ' fieldname ' does not exist.']);
                 end
                 options.(fieldname) = options_in.(fieldname);
-            end
-            
-        end
-        
-        function z = min_poly(c0, c1, c2, c3, c4, DeltaNeg, DeltaPos)
-            % compute the minimum of the function h in [DeltaNeg,DeltaPos]
-            
-            h = @(z) c0 + c1*z + c2*z^2 + c3*z^3 + c4*abs(z)^3;
-            zs = [DeltaNeg,DeltaPos];
-            argmin = @(zs, fun) noodles.SubproblemScmtr.argmin(zs, fun);
-            if c2 == 0 && c3 == 0 && c4 == 0
-                z = argmin(zs,h);
-            elseif c2 ~= 0 && c3 == 0 && c4 == 0
-                zcrt = -c1/(2*c2);
-                if DeltaNeg < zcrt && zcrt < DeltaPos
-                    zs = [zs zcrt];
-                end
-                z = argmin(zs,h);
-            elseif c3 ~= 0 && c4 == 0
-                xi = 4*c2^2-12*c3*c1;
-                if xi < 0
-                    z = argmin(zs,h);
-                else
-                    zcrt1 = (-2*c2-sqrt(xi))/(6*c3);
-                    zcrt2 = (-2*c2+sqrt(xi))/(6*c3);
-                    if DeltaNeg < zcrt1 && zcrt1 < DeltaPos
-                        zs = [zs zcrt1];
-                    end
-                    if DeltaNeg < zcrt2 && zcrt2 < DeltaPos
-                        zs = [zs zcrt2];
-                    end
-                    z = argmin(zs,h);
-                end
-            elseif c4 ~= 0
-                zneg = noodles.SubproblemScmtr.min_poly(c0,c1,c2,c3-c4,0,DeltaNeg,0);
-                zpos = noodles.SubproblemScmtr.min_poly(c0,c1,c2,c3+c4,0,0,DeltaPos);
-                z = argmin([zneg,zpos],h);
-            end
-            
-        end
-        
-        function z = argmin(zs, fun)
-            % value z in zs such that fun(z) is minimal among all z in zs
-            
-            n = size(zs,2);
-            z = zs(1);
-            fval = fun(z);
-            for j=2:n
-                z_new = zs(j);
-                fval_new = fun(z_new);
-                if fval_new < fval
-                    z = z_new;
-                    fval = fval_new;
-                end
             end
             
         end

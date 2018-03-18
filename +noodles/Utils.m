@@ -4,7 +4,7 @@ classdef Utils
     
     methods (Static)
         
-        function z = min_poly(c0, c1, c2, c3, c4, DeltaNeg, DeltaPos)
+        function z = min_poly3(c0, c1, c2, c3, c4, DeltaNeg, DeltaPos)
             % compute the minimum of the function 
             % h(z) = c0 + c1*z + c2*z^2 + c3*z^3 + c4*abs(z)^3
             % in [DeltaNeg,DeltaPos]
@@ -43,16 +43,19 @@ classdef Utils
                     end
                     z = argmin(zs,h);
                 end
+                
             elseif c4 ~= 0
-                zneg = noodles.SubproblemCr.min_poly(c0,c1,c2,c3-c4,0,DeltaNeg,0);
-                zpos = noodles.SubproblemCr.min_poly(c0,c1,c2,c3+c4,0,0,DeltaPos);
+                % third order absolute value term, consider <>=0
+                zneg = noodles.Utils.min_poly3(c0,c1,c2,c3-c4,0,DeltaNeg,0);
+                zpos = noodles.Utils.min_poly3(c0,c1,c2,c3+c4,0,0,DeltaPos);
                 z = argmin([zneg,zpos],h);
             end
             
         end
         
         function z = argmin(zs, fun)
-            % value z in zs such that fun(z) is minimal among all z in zs
+            % value z in zs(dim,n) such that fun(z) is minimal among all z
+            % in zs
             
             n = size(zs,2);
             z = zs(1);
@@ -60,7 +63,7 @@ classdef Utils
             for j=2:n
                 z_new = zs(j);
                 fval_new = fun(z_new);
-                if ~isfinite(fval) || (fval_new < fval && isfinite(fval_new))
+                if isnan(fval) || fval_new < fval 
                     z = z_new;
                     fval = fval_new;
                 end
