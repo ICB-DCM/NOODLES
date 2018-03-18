@@ -83,7 +83,7 @@ classdef SubproblemScr < noodles.NoodleSubproblem
                 this.sigma = this.options.gamma_1*this.sigma;
             else
                 if this.ratio >= this.options.eta_2
-                    this.sigma = max(min(this.sigma,this.gradnorm),this.options.sigma_min);
+                    this.sigma = max(min(this.sigma,this.gradnorm),sqrt(eps));
 %                     this.sigma = max([this.options.gamma_2*this.sigma, this.options.sigma_min]);
                 elseif this.ratio <= this.options.eta_1
                     this.sigma = this.options.gamma_1*this.sigma;
@@ -97,12 +97,12 @@ classdef SubproblemScr < noodles.NoodleSubproblem
         
         function options = get_options(options_in)
             options = struct();
-            options.sigma0      = 10;           % initial regularization
-            options.eta_1       = 0.25;         % threshold for bad model
-            options.eta_2       = 0.75;         % threshold for good model
-            options.gamma_1     = 2;            % factor for bad model
-            options.gamma_2     = 0.5;          % factor for good model
-            options.sigma_min   = sqrt(eps);    % minimum regularization
+            options.sigma0      = 10;     % initial regularization
+            options.eta_1       = 0.1;   % threshold for bad model
+            options.eta_2       = 0.9;   % threshold for good model
+            options.gamma_1     = 2;     % factor for bad model
+            options.gamma_2     = 0.5;   % factor for good model
+            options.sigma_min   = 1e-10; % minimum regularization
             
             % fill from input
             cell_fieldnames = fieldnames(options);

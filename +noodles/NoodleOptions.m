@@ -14,9 +14,9 @@ classdef NoodleOptions
         ub  = inf;
         
         % tolerances
-        tol_grad        = 1e-6;
-        tol_step        = 1e-6;
-        tol_fvaldiff    = 1e-6;
+        tol_grad        = 1e-8;
+        tol_step        = 1e-8;
+        tol_fvaldiff    = 1e-8;
         iter_max        = Inf;
         feval_max       = Inf;
         
