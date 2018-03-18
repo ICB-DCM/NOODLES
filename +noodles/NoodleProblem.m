@@ -33,11 +33,11 @@ classdef NoodleProblem < handle
             % Create a new NoodleProblem instance and fill all needed
             % properties.
             
-            this.objfun     = objfun;
             this.x0         = x0(:);
             this.dim        = size(this.x0,1);
             this.options    = noodles.NoodleOptions(options);
             this.subproblem = this.options.subproblem; % duplicate
+            this.objfun     = @(x) this.handle_boundaries(objfun, x);
         end
         
         function results = run_optimization(this)
@@ -167,6 +167,27 @@ classdef NoodleProblem < handle
             % termination condition has been hit.
             
             bool_cont = isnan(this.exitflag);
+        end
+        
+        function varargout = handle_boundaries(this, fun, x)
+            if any(x<this.options.lb) || any(x>this.options.ub)
+                varargout{1} = nan;
+                if nargout > 1
+                    varargout{2} = nan(this.dim,1);
+                    if nargout > 2
+                        varargout{3} = nan(this.dim,this.dim);
+                    end
+                end
+            else
+                switch nargout
+                    case 1
+                        varargout{1} = fun(x);
+                    case 2
+                        [varargout{1},varargout{2}] = fun(x);
+                    case 3
+                        [varargout{1},varargout{2},varargout{3}] = fun(x);
+                end
+            end
         end
         
         function print(this)
