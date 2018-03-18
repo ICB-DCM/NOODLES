@@ -27,7 +27,7 @@ classdef NoodleOptions
         
         % hessian-vector product function,
         % hvp_fcn: v -> H*v
-        hvp_fun = []
+        hvp_fun = @noodles.NoodleProblem.hvp_from_hessian;
         
         % textual output
         % 0: no output

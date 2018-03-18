@@ -342,6 +342,10 @@ classdef NoodleProblem < handle
             hess = [];
         end
         
+        function hess_x = hvp_from_hessian(problem, x)
+            [~,~,hess] = problem.objfun(x);
+            hess_x = hess * x;
+        end
     end
 end
 
