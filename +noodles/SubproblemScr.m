@@ -44,8 +44,8 @@ classdef SubproblemScr < noodles.NoodleSubproblem
         
         function solve(this)
             % minimize m(s) = g'*s + 1/2*s'*H's + 1/3*sigma*|s|^3
-            % version 1: solve exactly by separating the problem, using the
-            % full hessian
+            % solve exactly by separating the problem, using the
+            % full hessian and a variable inf-norm
             
             % solve rotated trust-region subproblem
             for j = 1:this.dim

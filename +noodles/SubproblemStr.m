@@ -1,29 +1,56 @@
-classdef SubproblemTr < noodles.NoodleSubproblem
-    % Solve the subproblem by a simple trust region strategy.
+classdef SubproblemStr < noodles.NoodleSubproblem
+    % Solve the subproblem by a simple separable trust region strategy.
 
     properties ( GetAccess = 'public', SetAccess = 'private' )
         tr_radius;
         ratio;
+        
+        % for Schur decomposition
+        Q;
+        D;
+        b;
+        
+        % space for solution of rotated problem
+        y;
     end
     
     methods
         
-        function this = SubproblemTr(options_in)
+        function this = SubproblemStr(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemTr.get_options(options_in);
+            this.options = noodles.SubproblemStr.get_options(options_in);
         end
         
         function init(this, noodle_problem)
             init@noodles.NoodleSubproblem(this, noodle_problem);
-            this.tr_radius = 0.1*sqrt(this.dim);
+            this.tr_radius = 10;
+            this.y  = nan(this.dim,1);
+        end
+        
+        function update(this, state)
+            % update fval, grad, hess
+            update@noodles.NoodleSubproblem(this, state);
+            
+            % update Q, D, b
+            [this.Q,this.D]   = schur(this.hess);
+            this.b  = this.Q'*this.grad;
         end
         
         function solve(this)
-            this.step = solve_trust(this.grad, this.hess, this.tr_radius);
-            this.stepnorm = 10;
+            % solve rotated trust-region subproblem
+            for j = 1:this.dim
+                c0 = 0;
+                c1 = this.b(j);
+                c2 = this.D(j,j)/2;
+                c4 = this.sigma/6;
+                this.y(j) = noodles.Utils.min_poly3(c0,c1,c2,0,c4,-inf,inf);
+            end
+            % compute step
+            this.step = this.Q*this.y;
+            this.stepnorm = norm(this.step, 2);
         end
         
         function accept_step = evaluate(this, fval_new)

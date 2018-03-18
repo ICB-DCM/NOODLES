@@ -2,7 +2,7 @@ classdef (Abstract) NoodleSubproblem < handle
     % The NoodleSubproblem class administers the local search for the next
     % evaluation point. To customize the subproblem solution, derive from
     % this class and implement the various methods used in
-    % NoodleProblem.run_optimization().
+    % NoodleProblem.run_optimization(), at least the abstract ones.
     
     properties ( GetAccess = 'public', SetAccess = 'protected' )
         % subproblem options, as defined in get_options
