@@ -20,10 +20,14 @@ classdef NoodleOptions
         iter_max        = Inf;
         feval_max       = Inf;
         
-        % [fval, grad, hess] = derivative_fcn(problem, x)
+        % [fval, grad, hess] = derivative_fun(problem, x)
         % use problem.objfun to compute values
         % implemented: objective (use third output), sr1, dfp, bfgs
-        derivative_fcn  = @noodles.NoodleProblem.objective;
+        derivative_fun   = @noodles.NoodleProblem.objective;
+        
+        % hessian-vector product function,
+        % hvp_fcn: v -> H*v
+        hvp_fun = []
         
         % textual output
         % 0: no output

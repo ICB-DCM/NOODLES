@@ -5,7 +5,7 @@ classdef NoodleProblem < handle
     
     properties  ( GetAccess = 'public', SetAccess = 'private' )
         % basic data
-        objfun;
+        obj_fun;
         x0;
         dim;
         options;
@@ -26,18 +26,22 @@ classdef NoodleProblem < handle
         % flag to indicate whether we are in the first iteration. Used e.g.
         % by function value updating routines.
         flag_initial;
+        
+        % hessian-vector product function
+        hvp_fun;
     end
     
     methods
-        function this = NoodleProblem(objfun, x0, options)
+        function this = NoodleProblem(obj_fun, x0, options)
             % Create a new NoodleProblem instance and fill all needed
             % properties.
             
-            this.x0         = x0(:);
-            this.dim        = size(this.x0,1);
-            this.options    = noodles.NoodleOptions(options);
-            this.subproblem = this.options.subproblem; % duplicate
-            this.objfun     = @(x) this.handle_boundaries(objfun, x);
+            this.x0             = x0(:);
+            this.dim            = size(this.x0,1);
+            this.options        = noodles.NoodleOptions(options);
+            this.subproblem     = this.options.subproblem; % duplicate
+            this.obj_fun        = @(x) this.handle_boundaries(obj_fun, x);
+            this.hvp_fun        = @(x) this.handle_boundaries_hvp(this.options.hvp_fun, x);
         end
         
         function results = run_optimization(this)
@@ -115,7 +119,7 @@ classdef NoodleProblem < handle
         function fval = compute_fval(this, x)
             % Wrapper for computing just the function value.
             
-            fval = this.objfun(x);
+            fval = this.obj_fun(x);
             % this.state.feval_count = this.state.feval_count + 1;
         end
         
@@ -123,7 +127,7 @@ classdef NoodleProblem < handle
             % In the state, update the position, function value and 
             % derivatives.
             
-            [fval,grad,hess] = this.options.derivative_fcn(this, x);
+            [fval,grad,hess] = this.options.derivative_fun(this, x);
             this.state.feval_count = this.state.feval_count + 1;
             
             if ~isfinite(fval) || ~all(isfinite(grad)) || ~all(all(isfinite(hess)))
@@ -190,6 +194,14 @@ classdef NoodleProblem < handle
             end
         end
         
+        function hess_x = handle_boundaries_hvp(this, hvp_fun, x)
+            if any(x<this.options.lb) || any(x>this.options.ub)
+                hess_x = nan(this.dim, 1);
+            else
+                hess_x = hvp_fun(x);
+            end
+        end
+        
         function print(this)
             % Output function, during optimization.
             
@@ -217,7 +229,7 @@ classdef NoodleProblem < handle
         function [fval, grad, hess] = objective(problem, x)
             % Take hessian from third output of objective function.
             
-            [fval,grad,hess] = problem.objfun(x);
+            [fval,grad,hess] = problem.obj_fun(x);
         end
         
         function [fval, grad, hess] = sr1(problem, x)
@@ -320,6 +332,14 @@ classdef NoodleProblem < handle
             else
                 [fval,grad,hess] = noodles.NoodleProblem.sr1(problem,x);
             end
+        end      
+                
+        function [fval, grad, hess] = no_hessian(problem, x)
+            % Compute only function value and gradient. This can be useful
+            % if the subproblem solver does not need the hessian at all or
+            % only hessian-vector products.
+            [fval,grad] = problem.objfun(x);
+            hess = [];
         end
         
     end

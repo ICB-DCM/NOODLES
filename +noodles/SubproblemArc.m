@@ -7,6 +7,7 @@ classdef SubproblemArc < noodles.NoodleSubproblem
     properties ( GetAccess = 'public', SetAccess = 'private' )
         sigma;
         ratio;
+        hvp_fun;
     end
     
     methods
@@ -22,6 +23,7 @@ classdef SubproblemArc < noodles.NoodleSubproblem
         function init(this, noodle_problem)
             init@noodles.NoodleSubproblem(this, noodle_problem);
             this.sigma = this.options.sigma0;
+            this.hvp_fun = noodle_problem.hvp_fun;
         end
         
         function update(this, state)

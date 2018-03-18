@@ -55,12 +55,14 @@ classdef (Abstract) NoodleSubproblem < handle
             this.dim        = noodle_problem.dim;
             this.lb         = noodle_problem.options.lb;
             this.ub         = noodle_problem.options.ub;
-            this.fval       = nan;
-            this.grad       = nan(this.dim,1);
-            this.hess       = nan(this.dim,this.dim);
-            this.gradnorm   = nan;
-            this.step       = nan(this.dim,1);
-            this.stepnorm   = inf;
+            
+            % All values initialized empty for efficiency reasons.
+            this.fval       = [];
+            this.grad       = [];
+            this.hess       = [];
+            this.gradnorm   = [];
+            this.step       = [];
+            this.stepnorm   = [];
         end
         
         function update(this, state)
