@@ -22,8 +22,7 @@ classdef SubproblemTr < noodles.NoodleSubproblem
         end
         
         function solve(this)
-            s = trust(this.grad, this.hess, this.tr_radius);
-            this.step = s;
+            this.step = solve_trust(this.grad, this.hess, this.tr_radius);
             this.stepnorm = norm(this.step, 2);
         end
         
@@ -41,12 +40,12 @@ classdef SubproblemTr < noodles.NoodleSubproblem
         function handle_accept_step(this, accept_step)
             if ~accept_step
                 this.tr_radius = this.options.gamma_1 * this.tr_radius;
-                this.tr_radius = min([0.9*norm(this.step,2),this.tr_radius]);
             else
-                if this.ratio >= this.options.eta_2
-                    this.tr_radius = min([this.options.gamma_2 * this.tr_radius, 2*sqrt(this.dim)]);
+                if this.ratio >= this.options.eta_2 && this.stepnorm >= 0.9 * this.tr_radius
+                    this.tr_radius = this.options.gamma_2 * this.tr_radius;
                 elseif this.ratio <= this.options.eta_1
-                    this.tr_radius = this.options.gamma_1 * this.tr_radius;
+                    this.tr_radius = min([this.options.gamma_1 * this.stepnorm, ...
+                        this.options.gamma_1 * this.tr_radius]);
                 end
             end
         end
@@ -74,6 +73,10 @@ classdef SubproblemTr < noodles.NoodleSubproblem
                 options.(fieldname) = options_in.(fieldname);
             end
             
+        end
+        
+        function s = solve_trust(grad, hess, tr_radius)
+            s = trust(grad, hess, tr_radius);
         end
         
     end
