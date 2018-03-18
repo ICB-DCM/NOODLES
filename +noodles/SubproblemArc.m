@@ -12,12 +12,13 @@ classdef SubproblemArc < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemCr(options_in)
+        function this = SubproblemArc(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
             this.options = noodles.SubproblemArc.get_options(options_in);
+            error("This class is not implemented yet.");
         end
         
         function init(this, noodle_problem)
@@ -26,20 +27,9 @@ classdef SubproblemArc < noodles.NoodleSubproblem
             this.hvp_fun = noodle_problem.hvp_fun;
         end
         
-        function update(this, state)
-            % update fval, grad, hess
-            update@noodles.NoodleSubproblem(this, state);
-        end
-        
         function solve(this)
-            % minimize m(s) = g'*s + 1/2*s'*H's + 1/3*sigma*|s|^3
-            
-            % question: is it possible to solve the problem
-            % sufficiently accurate without using the full hessian, but
-            % only hessian-vector products? and is this more reliable and
-            % faster than using e.g. sr1 approximations for the hessian?
-            
-            % TODO
+            this.step = SubproblemArc.arc_glrt(this.grad, this.hess, this.sigma);
+            this.stepnorm = norm(step, 2);
         end
         
         function accept_step = evaluate(this, fval_new)
@@ -49,7 +39,7 @@ classdef SubproblemArc < noodles.NoodleSubproblem
             m = this.fval ...
                 + this.grad'*this.step ...
                 + 1/2*this.step'*this.hess*this.step ...
-                + 1/6*this.sigma * norm(this.step, 2)^3;
+                + 1/3*this.sigma * norm(this.step, 2)^3;
             
             pred_diff = this.fval - m;
             this.ratio = fval_diff / pred_diff;
@@ -60,12 +50,13 @@ classdef SubproblemArc < noodles.NoodleSubproblem
         
         function handle_accept_step(this, accept_step)
             if ~accept_step
-                this.sigma = 2*this.sigma;
+                this.sigma = this.options.gamma_1*this.sigma;
             else
                 if this.ratio >= this.options.eta_2
-                    this.sigma = max([0.5*this.sigma, 1e-10]);
+                    this.sigma = max(min(this.sigma,this.gradnorm),this.options.sigma_min);
+%                     this.sigma = max([this.options.gamma_2*this.sigma, this.options.sigma_min]);
                 elseif this.ratio <= this.options.eta_1
-                    this.sigma = 2*this.sigma;
+                    this.sigma = this.options.gamma_1*this.sigma;
                 end
             end
         end
@@ -76,11 +67,13 @@ classdef SubproblemArc < noodles.NoodleSubproblem
         
         function options = get_options(options_in)
             options = struct();
-            options.epsilon = 1e-5;
-            options.sigma0  = 1;
-            options.theta   = 1e-4;
-            options.eta_1   = 0.1;
-            options.eta_2   = 0.9;
+            options.sigma0      = 10;           % initial regularization
+            options.eta_1       = 0.25;         % threshold for bad model
+            options.eta_2       = 0.75;         % threshold for good model
+            options.gamma_1     = 2;            % factor for bad model
+            options.gamma_2     = 0.5;          % factor for good model
+            options.sigma_min   = sqrt(eps);    % minimum regularization
+            
             
             % fill from input
             cell_fieldnames = fieldnames(options);
@@ -93,6 +86,14 @@ classdef SubproblemArc < noodles.NoodleSubproblem
                 end
                 options.(fieldname) = options_in.(fieldname);
             end
+            
+        end
+        
+        function [s] = arc_glrt(grad, hess, sigma)
+           s = arg_newton(A, b, sigma); 
+        end
+        
+        function [s, lambda] = arc_newton(A, b, sigma)
             
         end
         
