@@ -93,7 +93,7 @@ classdef SubproblemScmcr < noodles.NoodleSubproblem
             
             this.sufficient_decrease = fval_new < this.fval - this.options.alpha * sum(abs(this.y).^3);
             
-            accept_step = fval_new < this.fval;
+            accept_step = isnan(this.fval) || fval_new < this.fval;
         end
         
         function handle_accept_step(this, accept_step)

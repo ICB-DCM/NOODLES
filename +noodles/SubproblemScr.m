@@ -73,7 +73,7 @@ classdef SubproblemScr < noodles.NoodleSubproblem
             this.ratio = fval_diff / pred_diff;
             
             % accept anyway
-            accept_step = fval_new < this.fval;
+            accept_step = isnan(this.fval) || fval_new < this.fval;
         end
         
         function handle_accept_step(this, accept_step)
