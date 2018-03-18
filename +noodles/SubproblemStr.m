@@ -53,7 +53,7 @@ classdef SubproblemStr < noodles.NoodleSubproblem
             end
             % compute step
             this.step = this.Q*this.y;
-            this.stepnorm = norm(this.y, inf);disp(num2str(this.tr_radius));disp(num2str(this.stepnorm));disp(mat2str(this.y));
+            this.stepnorm = norm(this.y, inf);
         end
         
         function accept_step = evaluate(this, fval_new)

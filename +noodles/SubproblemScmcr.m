@@ -86,7 +86,7 @@ classdef SubproblemScmcr < noodles.NoodleSubproblem
             
             % compute step
             this.step = this.Q*this.y;
-            this.stepnorm = norm(this.step, 2);
+            this.stepnorm = norm(this.y, inf);
         end
         
         function accept_step = evaluate(this, fval_new)
