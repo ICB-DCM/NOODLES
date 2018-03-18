@@ -22,11 +22,16 @@ classdef NoodleOptions
         
         % [fval, grad, hess] = derivative_fun(problem, x)
         % use problem.objfun to compute values
-        % implemented: objective (use third output), sr1, dfp, bfgs
+        % implemented: objective (use third output), sr1, dfp, bfgs, psb,
+        % no_hessian (i.e. do not compute hessian), and customizations.
+        % Set derivative_fun to no_hessian if the subproblem solver does
+        % not need the full hessian, to improve performance.
         derivative_fun   = @noodles.NoodleProblem.objective;
         
-        % hessian-vector product function,
-        % hvp_fcn: v -> H*v
+        % hessian-vector product function.
+        % hvp_fcn: x -> hess*x
+        % Set derivative_fun to no_hessian if the subproblem solver only 
+        % needs hessian-vector products.
         hvp_fun = @noodles.NoodleProblem.hvp_from_hessian;
         
         % textual output
