@@ -18,12 +18,12 @@ classdef SubproblemTr < noodles.NoodleSubproblem
         
         function init(this, noodle_problem)
             init@noodles.NoodleSubproblem(this, noodle_problem);
-            this.tr_radius = 0.1*sqrt(this.dim);
+            this.tr_radius = this.options.tr_radius0;
         end
         
         function solve(this)
-            this.step = noodles.SubproblemTr.solve_trust(this.grad, this.hess, this.tr_radius);
-            this.stepnorm = 10;
+            this.step = this.options.solve_method(this.grad, this.hess, this.tr_radius);
+            this.stepnorm = norm(this.step, 2);
         end
         
         function accept_step = evaluate(this, fval_new)
@@ -56,10 +56,12 @@ classdef SubproblemTr < noodles.NoodleSubproblem
        
         function options = get_options(options_in)
             options = struct();
-            options.eta_2 = 0.75;  % threshold for good model
-            options.eta_1 = 0.25;  % threshold for bad model
-            options.gamma_2 = 2;   % factor for good model
-            options.gamma_1 = 0.5; % factor for bad model
+            options.eta_2 = 0.75;       % threshold for good model
+            options.eta_1 = 0.25;       % threshold for bad model
+            options.gamma_2 = 2;        % factor for good model
+            options.gamma_1 = 0.5;      % factor for bad model
+            options.tr_radius0 = 10;    % initial trust-region radius
+            options.solve_method = @noodles.SubproblemTr.solve_trust;
             
             % fill from input
             cell_fieldnames = fieldnames(options);
