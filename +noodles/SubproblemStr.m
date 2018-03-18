@@ -45,12 +45,15 @@ classdef SubproblemStr < noodles.NoodleSubproblem
                 c0 = 0;
                 c1 = this.b(j);
                 c2 = this.D(j,j)/2;
-                c4 = this.sigma/6;
-                this.y(j) = noodles.Utils.min_poly3(c0,c1,c2,0,c4,-inf,inf);
+                c3 = 0;
+                c4 = 0;
+                DeltaMin = - this.tr_radius;
+                DeltaMax = this.tr_radius;
+                this.y(j) = noodles.Utils.min_poly3(c0,c1,c2,c3,c4,DeltaMin,DeltaMax);
             end
             % compute step
             this.step = this.Q*this.y;
-            this.stepnorm = norm(this.step, 2);
+            this.stepnorm = norm(this.y, inf);disp(num2str(this.tr_radius));disp(num2str(this.stepnorm));disp(mat2str(this.y));
         end
         
         function accept_step = evaluate(this, fval_new)
@@ -86,7 +89,7 @@ classdef SubproblemStr < noodles.NoodleSubproblem
             options.eta_2 = 0.75;  % threshold for good model
             options.eta_1 = 0.25;  % threshold for bad model
             options.gamma_2 = 2;   % factor for good model
-            options.gamma_1 = 0.5; % factor for bad model
+            options.gamma_1 = 0.25; % factor for bad model
             
             % fill from input
             cell_fieldnames = fieldnames(options);
@@ -100,10 +103,6 @@ classdef SubproblemStr < noodles.NoodleSubproblem
                 options.(fieldname) = options_in.(fieldname);
             end
             
-        end
-        
-        function s = solve_trust(grad, hess, tr_radius)
-            s = trust(grad, hess, tr_radius);
         end
         
     end

@@ -128,6 +128,7 @@ classdef NoodleProblem < handle
             
             if ~isfinite(fval) || ~all(isfinite(grad)) || ~all(all(isfinite(hess)))
                 success = false;
+                disp('Failure!');
             else
                 fval_old = this.state.fval;
                 

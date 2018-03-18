@@ -22,7 +22,7 @@ classdef SubproblemTr < noodles.NoodleSubproblem
         end
         
         function solve(this)
-            this.step = solve_trust(this.grad, this.hess, this.tr_radius);
+            this.step = noodles.SubproblemTr.solve_trust(this.grad, this.hess, this.tr_radius);
             this.stepnorm = 10;
         end
         
