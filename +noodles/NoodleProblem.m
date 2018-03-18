@@ -337,13 +337,16 @@ classdef NoodleProblem < handle
             % Compute only function value and gradient. This can be useful
             % if the subproblem solver does not need the hessian at all or
             % only hessian-vector products.
+            
             [fval,grad] = problem.objfun(x);
             hess = [];
         end
         
-        function hess_x = hvp_from_hessian(problem, x)
-            [~,~,hess] = problem.objfun(x);
-            hess_x = hess * x;
+        function hess_v = hvp_from_hessian(problem, v)
+            % Compute hessian-vector product using the hessian currently
+            % stored in problem.state.
+            
+            hess_v = problem.state.hess * v;
         end
     end
 end
