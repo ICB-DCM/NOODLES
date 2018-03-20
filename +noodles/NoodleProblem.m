@@ -234,7 +234,7 @@ classdef NoodleProblem < handle
         function [fval, grad, hess] = sr1(problem, x)
             % Update hessian via Symmetric Rank 1 update.
             
-            [fval,grad] = problem.objfun(x);
+            [fval,grad] = problem.obj_fun(x);
             
             if problem.flag_initial
                 hess = eye(problem.dim);
@@ -258,7 +258,7 @@ classdef NoodleProblem < handle
         function [fval, grad, hess] = dfp(problem, x)
             % Update hessian via Davidon-Fletcher-Powell formula.
             
-            [fval,grad] = problem.objfun(x);
+            [fval,grad] = problem.obj_fun(x);
             
             if problem.flag_initial
                 hess = eye(problem.dim);
@@ -280,7 +280,7 @@ classdef NoodleProblem < handle
         function [fval, grad, hess] = bfgs(problem, x)
             % Update hessian via Broyden-Fletcher-Goldfarb-Shanno formula.
             
-            [fval,grad] = problem.objfun(x);
+            [fval,grad] = problem.obj_fun(x);
             
             if problem.flag_initial
                 hess = eye(problem.dim);
@@ -300,7 +300,7 @@ classdef NoodleProblem < handle
         function [fval, grad, hess] = psb(problem, x)
            % Update hessian via Powell-symmetric-Broyden formula.
            
-           [fval,grad] = problem.objfun(x);
+           [fval,grad] = problem.obj_fun(x);
            
            if problem.flag_initial
                hess = eye(problem.dim);
@@ -338,7 +338,7 @@ classdef NoodleProblem < handle
             % if the subproblem solver does not need the hessian at all or
             % only hessian-vector products.
             
-            [fval,grad] = problem.objfun(x);
+            [fval,grad] = problem.obj_fun(x);
             hess = [];
         end
         

@@ -1,4 +1,4 @@
-classdef SubproblemStr < noodles.NoodleSubproblem
+classdef SubproblemSTr < noodles.NoodleSubproblem
     % Solve the subproblem by a simple separable trust region strategy.
 
     properties ( GetAccess = 'public', SetAccess = 'private' )
@@ -16,12 +16,12 @@ classdef SubproblemStr < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemStr(options_in)
+        function this = SubproblemSTr(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemStr.get_options(options_in);
+            this.options = noodles.SubproblemSTr.get_options(options_in);
         end
         
         function init(this, noodle_problem)

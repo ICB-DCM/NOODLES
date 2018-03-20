@@ -1,4 +1,4 @@
-classdef SubproblemScmtr < noodles.NoodleSubproblem
+classdef SubproblemSCmTr < noodles.NoodleSubproblem
     % Method for unconstrained optimization via a trust-region approach using a
     % separable cubic model. Based on [Separable cubic modeling and a
     % trust-region strategy for unconstrained minimization with impact in lobal
@@ -18,12 +18,12 @@ classdef SubproblemScmtr < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemScmtr(options_in)
+        function this = SubproblemSCmTr(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemScmtr.get_options(options_in);
+            this.options = noodles.SubproblemSCmTr.get_options(options_in);
         end
         
         function init(this, noodle_problem)

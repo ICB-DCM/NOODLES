@@ -1,8 +1,8 @@
-classdef SubproblemArc < noodles.NoodleSubproblem
+classdef SubproblemARC < noodles.NoodleSubproblem
     % Adaptive Regularization using Cubics, based on [Adaptive cubic
     % regularization methods for unconstrained optimization. Part 1:
     % motivation, convergence and numerical results. Cartis, Gould, Toint.
-    % 2007-2009]
+    % 2007-2009].
     
     properties ( GetAccess = 'public', SetAccess = 'private' )
         sigma;
@@ -12,12 +12,12 @@ classdef SubproblemArc < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemArc(options_in)
+        function this = SubproblemARC(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemArc.get_options(options_in);
+            this.options = noodles.SubproblemARC.get_options(options_in);
             error("This class is not implemented yet.");
         end
         
@@ -28,7 +28,7 @@ classdef SubproblemArc < noodles.NoodleSubproblem
         end
         
         function solve(this)
-            this.step = SubproblemArc.arc_glrt(this.grad, this.hess, this.sigma);
+            this.step = SubproblemARC.arc_glrt(this.grad, this.hess, this.sigma);
             this.stepnorm = norm(step, 2);
         end
         

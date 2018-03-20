@@ -1,4 +1,4 @@
-classdef SubproblemScr < noodles.NoodleSubproblem
+classdef SubproblemSCr < noodles.NoodleSubproblem
     % Cubic regularization with exact solution of the separable subproblem.
     
     properties ( GetAccess = 'public', SetAccess = 'private' )
@@ -19,12 +19,12 @@ classdef SubproblemScr < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemScr(options_in)
+        function this = SubproblemSCr(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemScr.get_options(options_in);
+            this.options = noodles.SubproblemSCr.get_options(options_in);
         end
         
         function init(this, noodle_problem)

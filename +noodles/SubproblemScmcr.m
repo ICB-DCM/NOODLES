@@ -1,4 +1,4 @@
-classdef SubproblemScmcr < noodles.NoodleSubproblem
+classdef SubproblemSCmCr < noodles.NoodleSubproblem
     % Method for unconstrained optimization via a cubic-regularization approach
     % using a separable cubic model. Based on [Cubic-regularization counterpart
     % of a variable-norm trust-region method for unconstrained minimization.
@@ -19,12 +19,12 @@ classdef SubproblemScmcr < noodles.NoodleSubproblem
     
     methods
         
-        function this = SubproblemScmcr(options_in)
+        function this = SubproblemSCmCr(options_in)
             if nargin < 1
                 options_in = struct();
             end
             
-            this.options = noodles.SubproblemScmcr.get_options(options_in);
+            this.options = noodles.SubproblemSCmCr.get_options(options_in);
         end
         
         function init(this, noodle_problem)
